@@ -8,17 +8,21 @@ import org.springframework.stereotype.Repository;
 
 import mx.tecnm.backend.api.models.Categoria;
 
+    
 @Repository
 public class CategoriaDAO {
 
     @Autowired
-    private JdbcClient jdbcClient;
+    private JdbcClient conexion;
 
-    public List<Categoria> obtenerCategorias() {
+    public List<Categoria> conusultarCategorias() {
         String sql = "SELECT id, nombre FROM categorias";
-        return jdbcClient.sql(sql)
-                .query(new CategoriaRM())
-                .list();
+        return conexion.sql(sql)
+                .query((rs, rowNum) -> new Categoria(
+                    rs.getInt("id"),
+                    rs.getString("nombre")))
+                    .list();
     }
 
 }
+

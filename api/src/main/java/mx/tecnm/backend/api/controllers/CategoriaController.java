@@ -1,5 +1,6 @@
 package mx.tecnm.backend.api.controllers;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ public class CategoriaController {
 
     @GetMapping()
     public ResponseEntity<List<Categoria>> obtenerCategorias() {
-        List<Categoria> resultado = repo.obtenerCategorias();
+        List<Categoria> resultado = repo.conusultarCategorias();
         return ResponseEntity.ok(resultado);
     }
 
