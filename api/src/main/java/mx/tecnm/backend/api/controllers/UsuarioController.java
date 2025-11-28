@@ -8,19 +8,19 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import mx.tecnm.backend.api.models.Pedidos;
-import mx.tecnm.backend.api.repository.PedidosDAO;
+import mx.tecnm.backend.api.models.Usuario;
+import mx.tecnm.backend.api.repository.UsuarioDAO;
 
 @RestController
-@RequestMapping("/pedidos")
-public class PedidosController {
+@RequestMapping("/usuarios")
+public class UsuarioController {
 
     @Autowired
-    PedidosDAO repo;
+    UsuarioDAO repo;
 
     @GetMapping()
-    public ResponseEntity<List<Pedidos>> obtenerPedidos() {
-        List<Pedidos> resultado = repo.consultarPedidos();
+    public ResponseEntity<List<Usuario>> obtenerUsuarios() {
+        List<Usuario> resultado = repo.consultarUsuarios();
         return ResponseEntity.ok(resultado);
     }
 

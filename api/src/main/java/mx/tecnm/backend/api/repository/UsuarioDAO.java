@@ -5,17 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import mx.tecnm.backend.api.models.Usuarios;
+import mx.tecnm.backend.api.models.Usuario;
 
 @Repository
-public class UsuariosDAO {
+public class UsuarioDAO {
     @Autowired
     private JdbcClient conexion;
 
-    public List<Usuarios> consultarUsuarios() {
+    public List<Usuario> consultarUsuarios() {
         String sql = "SELECT id, nombre, email, telefono, sexo, fecha_nacimiento, contrasena, fecha_registro FROM usuarios";
         return conexion.sql(sql)
-                .query((rs, rowNum) -> new Usuarios(
+                .query((rs, rowNum) -> new Usuario(
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("email"),

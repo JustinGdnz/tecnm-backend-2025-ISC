@@ -6,18 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import mx.tecnm.backend.api.models.Productos;
+import mx.tecnm.backend.api.models.Producto;
 
 @Repository
-public class ProductosDAO {
+public class ProductoDAO {
     @Autowired
     private JdbcClient conexion;
 
-    public List<Productos> consultarProductos() {
+    public List<Producto> consultarProductos() {
 
         String sql = "SELECT id, nombre, descripcion, marca, color, precio, peso,alto, ancho, profundidad, categorias_id, sku FROM productos";
         return conexion.sql(sql)
-                .query((rs, rowNum) -> new Productos(
+                .query((rs, rowNum) -> new Producto(
                         rs.getInt("id"),
                         rs.getString("nombre"),
                         rs.getString("descripcion"),

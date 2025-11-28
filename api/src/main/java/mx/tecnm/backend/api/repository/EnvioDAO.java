@@ -6,20 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
-import mx.tecnm.backend.api.models.Envios;
+import mx.tecnm.backend.api.models.Envio;
 
 @Repository
-public class EnviosDAO {
+public class EnvioDAO {
 
     @Autowired
     private JdbcClient conexion;
 
-    public List<Envios> consultarEnvios() {
+    public List<Envio> consultarEnvios() {
 
         String sql = "SELECT id, domicilios_id, estado, fecha, fecha_entrega, numero_seguimiento, pedidos_id FROM envios";
 
         return conexion.sql(sql)
-                .query((rs, rowNum) -> new Envios(
+                .query((rs, rowNum) -> new Envio(
                         rs.getInt("id"),
                         rs.getInt("domicilios_id"),
                         rs.getString("estado"),
