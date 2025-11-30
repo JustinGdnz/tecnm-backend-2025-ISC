@@ -2,10 +2,14 @@ package mx.tecnm.backend.api.controllers;
 
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,39 +25,39 @@ public class CategoriaController {
 
     @GetMapping()
     public ResponseEntity<List<Categoria>> obtenerCategorias() {
-        List<Categoria> resultado = repo.conusultarCategorias();
+        List<Categoria> resultado = repo.consultarCategorias();
         return ResponseEntity.ok(resultado);
     }
-@GetMapping("/{id}")
+
+    @GetMapping("/{id}")
     public ResponseEntity<Categoria> obtenerCategoriaPorId(@PathVariable int id) {
-        return ResponseEntity.ofNullable(repo.consultarCategoriaPorId(id));
+        Categoria categoria = repo.obtenerCategoriaPorId(id);
+        return categoria == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(categoria);
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<Categoria> crearCategoria(@RequestParam String nombre,
-                                                    @RequestParam String descripcion) {
-        return ResponseEntity.ok(repo.crearCategoria(nombre, descripcion));
+    @PostMapping
+    public ResponseEntity<Categoria> crearCategoria(@RequestParam String nombre) {
+        Categoria nueva = new Categoria(0, nombre); // ID temporal para memoria
+        Categoria creada = repo.crearCategoria(nueva);
+        return ResponseEntity.ok(creada);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Categoria> actualizarCategoria(@PathVariable int id,
-                                                         @RequestParam String nombre,
-                                                         @RequestParam String descripcion) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Categoria> actualizarCategoria(
+            @PathVariable int id,
+            @RequestParam String nombre) {
 
-        var existente = repo.consultarCategoriaPorId(id);
-        if (existente == null) return ResponseEntity.notFound().build();
+        Categoria actualizada = new Categoria(id, nombre);
+        Categoria resultado = repo.actualizarCategoria(id, actualizada);
 
-        var actualizado = repo.actualizarCategoria(
-                new Categoria(id, nombre, descripcion, existente.getFechaRegistro())
-        );
-
-        return ResponseEntity.ok(actualizado);
+        return resultado == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(resultado);
     }
 
-    @DeleteMapping("/eliminar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCategoria(@PathVariable int id) {
-        return repo.eliminarCategoria(id)
-                ? ResponseEntity.noContent().build()
-                : ResponseEntity.notFound().build();
+
+        boolean eliminado = repo.eliminarCategoria(id);
+
+        return eliminado ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
     }
 }
