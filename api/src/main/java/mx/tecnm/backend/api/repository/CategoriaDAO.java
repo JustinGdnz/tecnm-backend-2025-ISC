@@ -15,27 +15,25 @@ public class CategoriaDAO {
 
     // --------- CONSULTAR TODOS ---------
     public List<Categoria> consultarCategorias() {
-        String sql = "SELECT id, nombre, activo FROM categorias";
+        String sql = "SELECT id, nombre, activo FROM categorias WHERE activo";
 
         return conexion.sql(sql)
                 .query((rs, rowNum) -> new Categoria(
                         rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getBoolean("activo")
+                        rs.getString("nombre")
                 ))
                 .list();
     }
 
     // --------- CONSULTAR POR ID ---------
     public Categoria consultarCategoriaPorId(int id) {
-        String sql = "SELECT id, nombre, activo FROM categorias WHERE id = ?";
+        String sql = "SELECT id, nombre, activo FROM categorias WHERE id = ? AND activo";
 
         return conexion.sql(sql)
                 .param(id)
                 .query((rs, rowNum) -> new Categoria(
                         rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getBoolean("activo")
+                        rs.getString("nombre")
                 ))
                 .optional()
                 .orElse(null);
@@ -46,22 +44,21 @@ public class CategoriaDAO {
         String sql = """
             INSERT INTO categorias (nombre)
             VALUES (?)
-            RETURNING id, nombre, activo
+            RETURNING id, nombre
             """;
 
         return conexion.sql(sql)
                 .param(nombre)
                 .query((rs, rowNum) -> new Categoria(
                         rs.getInt("id"),
-                        rs.getString("nombre"),
-                        rs.getBoolean("activo")
+                        rs.getString("nombre")
                 ))
                 .single();
     }
 
     // --------- ACTUALIZAR ---------
     public Categoria actualizarCategoria(int id, String nombre) {
-        String sql = "UPDATE categorias SET nombre = ? WHERE id = ?";
+        String sql = "UPDATE categorias SET nombre = ? WHERE id = ? AND activo";
 
         int filas = conexion.sql(sql)
                 .params(nombre, id)
@@ -76,7 +73,7 @@ public class CategoriaDAO {
 
     // --------- ELIMINAR ---------
     public boolean eliminarCategoria(int id) {
-        String sql = "DELETE FROM categorias WHERE id = ?";
+        String sql = "UPDATE categorias SET activo = false WHERE id = ?";
 
         int filas = conexion.sql(sql)
                 .param(id)

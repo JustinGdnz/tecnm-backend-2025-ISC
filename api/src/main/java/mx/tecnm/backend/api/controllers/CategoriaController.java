@@ -36,7 +36,7 @@ public class CategoriaController {
     }
 
     // ------------------ POST (Crear) ----------------------
-    @PostMapping("/crear")
+    @PostMapping()
     public ResponseEntity<Categoria> crearCategoria(@RequestParam String nombre) {
 
         Categoria categoria = repo.crearCategoria(nombre);
@@ -45,7 +45,7 @@ public class CategoriaController {
     }
 
     // ------------------ PUT (Actualizar) ----------------------
-    @PutMapping("/actualizar/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Categoria> actualizarCategoria(
             @PathVariable int id,
             @RequestParam String nombre) {
@@ -62,7 +62,7 @@ public class CategoriaController {
     }
 
     // ------------------ DELETE ----------------------
-    @DeleteMapping("/eliminar/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarCategoria(@PathVariable int id) {
 
         boolean eliminado = repo.eliminarCategoria(id);
