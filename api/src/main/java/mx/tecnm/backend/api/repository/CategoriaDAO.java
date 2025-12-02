@@ -15,7 +15,7 @@ public class CategoriaDAO {
 
     // --------- CONSULTAR TODOS ---------
     public List<Categoria> consultarCategorias() {
-        String sql = "SELECT id, nombre, activo FROM categorias WHERE activo";
+        String sql = "SELECT id, nombre, activo FROM categorias WHERE activo=true";
 
         return conexion.sql(sql)
                 .query((rs, rowNum) -> new Categoria(
@@ -27,7 +27,7 @@ public class CategoriaDAO {
 
     // --------- CONSULTAR POR ID ---------
     public Categoria consultarCategoriaPorId(int id) {
-        String sql = "SELECT id, nombre, activo FROM categorias WHERE id = ? AND activo";
+        String sql = "SELECT id, nombre, activo FROM categorias WHERE id = ? AND activo=true";
 
         return conexion.sql(sql)
                 .param(id)
@@ -58,7 +58,7 @@ public class CategoriaDAO {
 
     // --------- ACTUALIZAR ---------
     public Categoria actualizarCategoria(int id, String nombre) {
-        String sql = "UPDATE categorias SET nombre = ? WHERE id = ? AND activo";
+        String sql = "UPDATE categorias SET nombre = ? WHERE id = ? AND activo=true";
 
         int filas = conexion.sql(sql)
                 .params(nombre, id)
