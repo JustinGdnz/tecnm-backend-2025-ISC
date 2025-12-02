@@ -15,7 +15,7 @@ public class MetodoPagoDAO {
     private JdbcClient conexion;
 
     public List<MetodoPago> consultarMetodoPago() {
-        String sql = "SELECT id, nombre, comision FROM metodos_pago";
+        String sql = "SELECT id, nombre, comision FROM metodos_pago WHERE activo=true";
 
         return conexion.sql(sql)
                 .query((rs, rowNum) -> new MetodoPago(
@@ -27,7 +27,7 @@ public class MetodoPagoDAO {
     }
 
     public MetodoPago consultarMetodoPagoPorId(int id) {
-        String sql = "SELECT id, nombre, comision FROM metodos_pago WHERE id = ?";
+        String sql = "SELECT id, nombre, comision FROM metodos_pago WHERE activo=true AND id = ?";
 
         return conexion.sql(sql)
                 .param(id)
@@ -41,7 +41,7 @@ public class MetodoPagoDAO {
     }
 
     public MetodoPago crearMetodoPago(String nombre, double comision) {
-    String sql = " INSERT INTO metodos_pago (nombre, comision) VALUES (?, ?) RETURNING id, nombre, comision";
+    String sql = " INSERT INTO metodos_pago (nombre, comision) VALUES (?, ?) RETURNING id, nombre, comision ";
 
     return conexion.sql(sql)
             .params(nombre, comision)
@@ -54,7 +54,7 @@ public class MetodoPagoDAO {
 }
 
    public MetodoPago actualizarMetodosPago(MetodoPago mp) {
-    String sql = "UPDATE metodos_pago SET nombre = ?, comision = ? WHERE id = ?";
+    String sql = "UPDATE metodos_pago SET nombre = ?, comision = ? WHERE activo=true AND id = ?";
 
     int filas = conexion.sql(sql)
             .params(mp.nombre(), mp.comision(), mp.id())
@@ -67,14 +67,15 @@ public class MetodoPagoDAO {
     return consultarMetodoPagoPorId(mp.id());
 }
 
-public boolean eliminarMetodoPago(int id) {
-    String sql = "DELETE FROM metodos_pago WHERE id = ?";
+ public boolean eliminarMetodoPago(int id) {
+        String sql = "UPDATE metodos_pago SET activo = false WHERE id = ?";
 
-    int filas = conexion.sql(sql)
-            .param(id)
-            .update();
+        int filas = conexion.sql(sql)
+                .param(id)
+                .update();
 
-    return filas > 0; // true si se eliminó, false si no existía
-}
+        return filas > 0;
+    }
+
 
 }
