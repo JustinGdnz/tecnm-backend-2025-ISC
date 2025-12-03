@@ -1,28 +1,47 @@
 package mx.tecnm.backend.api.controllers;
 
-import java.sql.Date;
+import java.net.URI;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
+import mx.tecnm.backend.api.dto.UsuarioRequest;
 import mx.tecnm.backend.api.models.Usuario;
 import mx.tecnm.backend.api.repository.UsuarioDAO;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/v1/usuarios")
 public class UsuarioController {
 
     @Autowired
     UsuarioDAO repo;
 
+    @Operation(summary = "Obtener una lista de todos los usuarios.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Lista de usuarios obtenida exitosamente.")
+        }
+    )
     @GetMapping
     public ResponseEntity<List<Usuario>> obtenerUsuarios() {
         List<Usuario> resultado = repo.consultarUsuarios();
         return ResponseEntity.ok(resultado);
     }
 
+    @Operation(summary = "Obtener un usuario por su ID.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Usuario obtenido exitosamente."),
+            @ApiResponse(responseCode = "404", description = "Usuario no encontrado.", content = @io.swagger.v3.oas.annotations.media.Content)
+        }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> obtenerUsuarioPorId(@PathVariable int id) {
         Usuario usuario = repo.consultarUsuarioPorId(id);
@@ -34,30 +53,41 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
-    @PostMapping("/crear")
-    public ResponseEntity<Usuario> crearUsuario(
-            @RequestParam String nombre,
-            @RequestParam String email,
-            @RequestParam String telefono,
-            @RequestParam String sexo,
-            @RequestParam Date fecha_nacimiento,
-            @RequestParam String contrasena) {
-        Usuario usuario = repo.crearUsuario(
-                nombre, email, telefono, sexo, fecha_nacimiento, contrasena);
+    @Operation(summary = "Crear un usuario nuevo.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente.")
+        }
+    )
+    @PostMapping()
+    public ResponseEntity<Usuario> crearUsuario(@Valid @RequestBody UsuarioRequest usuario) {
+        Usuario nuevoUsuario = repo.crearUsuario(
+            usuario.nombre(),
+            usuario.email(),
+            usuario.telefono(),
+            usuario.sexo(),
+            usuario.fechaNacimiento(),
+            usuario.contrasena()
+        );
 
-        return ResponseEntity.ok(usuario);
+        URI location = ServletUriComponentsBuilder
+            .fromCurrentRequest()
+            .path("/{id}")
+            .buildAndExpand(nuevoUsuario.id())
+            .toUri();
+
+        return ResponseEntity.created(location).body(nuevoUsuario);
     }
 
-    @PutMapping("/actualizar/{id}")
-    public ResponseEntity<Usuario> actualizarUsuario(
-            @PathVariable int id,
-            @RequestParam String nombre,
-            @RequestParam String email,
-            @RequestParam String telefono,
-            @RequestParam String sexo,
-            @RequestParam Date fecha_nacimiento,
-            @RequestParam String contrasena) {
-
+    @Operation(summary = "Actualizar un usuario.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "200", description = "Usuario actualizado exitosamente."),
+            @ApiResponse(responseCode = "404", description = "El usuario no existe.", content = @io.swagger.v3.oas.annotations.media.Content)
+        }
+    )
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> actualizarUsuario(@PathVariable int id, @Valid @RequestBody UsuarioRequest usuario) {
         Usuario existente = repo.consultarUsuarioPorId(id);
 
         if (existente == null) {
@@ -65,20 +95,23 @@ public class UsuarioController {
         }
 
         Usuario actualizado = repo.actualizarUsuario(
-                new Usuario(id, nombre, email, telefono, sexo, fecha_nacimiento,contrasena, existente.fecha_registro()));
+                new Usuario(id, usuario.nombre(), usuario.email(), usuario.telefono(),
+                        usuario.sexo(), usuario.fechaNacimiento(), usuario.contrasena(),
+                        existente.fecha_registro()));
 
         return ResponseEntity.ok(actualizado);
     }
 
-    @DeleteMapping("/eliminar/{id}")
+    @Operation(summary = "Eliminar un usuario.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(responseCode = "204", description = "Usuario eliminado exitosamente.")
+        }
+    )
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable int id) {
 
-        boolean eliminado = repo.eliminarUsuario(id);
-
-        if (!eliminado) {
-            return ResponseEntity.notFound().build();
-        }
-
+        repo.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
 }

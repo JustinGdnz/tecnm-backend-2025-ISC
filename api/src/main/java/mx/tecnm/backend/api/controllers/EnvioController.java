@@ -12,7 +12,7 @@ import mx.tecnm.backend.api.models.Envio;
 import mx.tecnm.backend.api.repository.EnvioDAO;
 
 @RestController
-@RequestMapping("/envios")
+@RequestMapping("/api/v1/envios")
 public class EnvioController {
 
       @Autowired

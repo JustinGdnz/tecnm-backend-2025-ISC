@@ -12,7 +12,7 @@ import mx.tecnm.backend.api.models.Domicilio;
 import mx.tecnm.backend.api.repository.DomicilioDAO;
 
 @RestController
-@RequestMapping("/domicilios")
+@RequestMapping("/api/v1/domicilios")
 public class DomicilioController {
 
     @Autowired
